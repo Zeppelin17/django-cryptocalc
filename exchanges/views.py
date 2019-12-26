@@ -4,26 +4,40 @@ from django.http import HttpResponse
 from .models import Exchange
 import requests, json
 
+"""
+Desc: Auxiliar function to process API Responses
+in: list of responses
+out: object to be returned with JsonResponse()
+"""
+def processAPIResponse(responseList):
+    finalResponse = []
+    for response in responseList:
+        if response.status_code == 200:
+            finalResponse.append(response.json())
+        else:
+            finalResponse.append({'api_error': response.status_code})
+    
+    return finalResponse
+
+
+
 def krakenTicker(request):
     kraken = get_object_or_404(Exchange, name='kraken')
-    response = requests.get(kraken.api_endpoint + '/0/public/Ticker?pair=xbteur,etheur,dasheur,ltceur,ethxbt,dashxbt,ltcxbt')
-    
-    if response.status_code == 200:
-        apidata = response.json()
-        return JsonResponse(apidata, safe=False)
-    else:
-        return JsonResponse({'api_error': response.status_code})
+    responseList = []
+    responseList.append(requests.get(kraken.api_endpoint + '/0/public/Ticker?pair=xbteur,etheur,dasheur,ltceur,ethxbt,dashxbt,ltcxbt'))
+
+    apidata = processAPIResponse(responseList)
+    return JsonResponse(apidata, safe=False)
+
 
 
 def bitfinexTicker(request):
     bitfinex = get_object_or_404(Exchange, name='bitfinex')
-    response = requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCEUR,tETHEUR,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC')
+    responseList = []
+    responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCEUR,tETHEUR,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
     
-    if response.status_code == 200:
-        apidata = response.json()
-        return JsonResponse(apidata, safe=False)
-    else:
-        return JsonResponse({'api_error': response.status_code})
+    apidata = processAPIResponse(responseList)
+    return JsonResponse(apidata, safe=False)
 
 
 def binanceTicker(request):
@@ -42,14 +56,8 @@ def binanceTicker(request):
     for call in binanceCalls:
         responseList.append(requests.get(binance.api_endpoint + call))
 
-    finalResponse = []
-    for response in responseList:
-        if response.status_code == 200:
-            finalResponse.append(response.json())
-        else:
-            finalResponse.append({'api_error': response.status_code})
-
-    return JsonResponse(finalResponse, safe=False)
+    apidata = processAPIResponse(responseList)
+    return JsonResponse(apidata, safe=False)
 
 
 def hitbtcTicker(request):
@@ -68,14 +76,8 @@ def hitbtcTicker(request):
     for call in hitbtcCalls:
         responseList.append(requests.get(hitbtc.api_endpoint + call))
 
-    finalResponse = []
-    for response in responseList:
-        if response.status_code == 200:
-            finalResponse.append(response.json())
-        else:
-            finalResponse.append({'api_error': response.status_code})
-
-    return JsonResponse(finalResponse, safe=False)
+    apidata = processAPIResponse(responseList)
+    return JsonResponse(apidata, safe=False)
 
 
 def okexTicker(request):
@@ -94,13 +96,7 @@ def okexTicker(request):
     for call in okexCalls:
         responseList.append(requests.get(okex.api_endpoint + call))
 
-    finalResponse = []
-    for response in responseList:
-        if response.status_code == 200:
-            finalResponse.append(response.json())
-        else:
-            finalResponse.append({'api_error': response.status_code})
+    apidata = processAPIResponse(responseList)
+    return JsonResponse(apidata, safe=False)
 
-    return JsonResponse(finalResponse, safe=False)
-
-#Refactorizar para unificar código?
+#Unificar formato de respuesta de diferentes API's
