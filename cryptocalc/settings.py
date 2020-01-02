@@ -25,7 +25,7 @@ SECRET_KEY = 'st8&r8$z8sq8-av%^6o-upl2djg91(!jt56pn9$p@a8n!$%#8#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com', 'cryptocalc-zeppelin17.netlify.com']
 
 
 # Application definition
