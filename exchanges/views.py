@@ -66,7 +66,7 @@ def getResponseDictionary():
 def krakenTicker(request):
     kraken = get_object_or_404(Exchange, name='kraken')
     responseList = []
-    responseList.append(requests.get(kraken.api_endpoint + '/0/public/Ticker?pair=xbteur,etheur,dasheur,ltceur,ethxbt,dashxbt,ltcxbt'))
+    responseList.append(requests.get(kraken.api_endpoint + '/0/public/Ticker?pair=xbtusd,ethusd,dashusd,ltcusd,ethxbt,dashxbt,ltcxbt'))
 
     apidata = processAPIResponse(responseList)
 
@@ -108,7 +108,7 @@ def krakenTicker(request):
 def bitfinexTicker(request):
     bitfinex = get_object_or_404(Exchange, name='bitfinex')
     responseList = []
-    responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCEUR,tETHEUR,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
+    responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCUSD,tETHEUR,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
     
     apidata = processAPIResponse(responseList)
 
