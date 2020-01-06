@@ -108,7 +108,7 @@ def krakenTicker(request):
 def bitfinexTicker(request):
     bitfinex = get_object_or_404(Exchange, name='bitfinex')
     responseList = []
-    responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCUSD,tETHEUR,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
+    responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCUSD,tETHUSD,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
     
     apidata = processAPIResponse(responseList)
 
