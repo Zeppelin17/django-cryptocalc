@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from .models import Exchange
 from time import sleep
 import requests, json
-from websocket import create_connection
 
 """
 Desc: Helper function to process REST API Responses
