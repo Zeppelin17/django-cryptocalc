@@ -2,14 +2,16 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponse
 from .models import Exchange
+from time import sleep
 import requests, json
+from websocket import create_connection
 
 """
-Desc: Helper function to process API Responses
+Desc: Helper function to process REST API Responses
 in: list of responses
 out: object to be returned with JsonResponse()
 """
-def processAPIResponse(responseList):
+def processRestAPIResponse(responseList):
     finalResponse = []
     for response in responseList:
         if response.status_code == 200:
@@ -18,6 +20,26 @@ def processAPIResponse(responseList):
             finalResponse.append({'api_error': response.status_code})
     
     return finalResponse
+
+
+"""
+Desc: Helper function to process WebSocket API Responses
+in: websocket, message, method
+    - websocket with already opened connection 
+    - message to send to the endpoint
+    - method: "send" or "receive" data
+out: websocket response object in json format
+"""
+def processWebsocketAPIResponse(ws, method, msg=""):
+    if method == "send":
+        ws.send(msg)
+        result = json.loads(ws.recv())
+    
+    if method == "receive":
+        sleep(0.3)
+        result = json.loads(ws.recv())
+    
+    return result
 
 
 """
@@ -61,6 +83,68 @@ def getResponseDictionary():
 
     return resDict
 
+"""
+Desc: Helper function that returns pair names in foormat XXX-YYY or XXX-YYYT
+in: pair name
+out: normalized pair name
+"""
+def normalizePairName(pairName):
+
+    normalizedPairNames = [
+        "DSH-USD",   #0
+        "DSH-USDT",  #1
+        "DSH-BTC",   #2
+        "ETH-BTC",   #3
+        "ETH-USD",   #4
+        "ETH-USDT",  #5
+        "LTC-BTC",   #6
+        "LTC-USD",   #7
+        "LTC-USDT",  #8
+        "BTC-USD",   #9
+        "BTC-USDT",  #10
+    ] 
+
+    if pairName == "DASHUSD": return normalizedPairNames[0]
+    if pairName == "DASHXBT": return normalizedPairNames[2]
+    if pairName == "XETHXXBT": return normalizedPairNames[3]
+    if pairName == "XETHZUSD": return normalizedPairNames[4]
+    if pairName == "XLTCXXBT": return normalizedPairNames[6]
+    if pairName == "XLTCZUSD": return normalizedPairNames[7]
+    if pairName == "XXBTZUSD": return normalizedPairNames[9]
+
+    if pairName == "tBTCUSD": return normalizedPairNames[9]
+    if pairName == "tETHUSD": return normalizedPairNames[4]
+    if pairName == "tDSHUSD": return normalizedPairNames[0]
+    if pairName == "tLTCUSD": return normalizedPairNames[7]
+    if pairName == "tETHBTC": return normalizedPairNames[3]
+    if pairName == "tDSHBTC": return normalizedPairNames[2]
+    if pairName == "tLTCBTC": return normalizedPairNames[6]
+
+    if pairName == "BTCUSDT": return normalizedPairNames[10]
+    if pairName == "ETHUSDT": return normalizedPairNames[5]
+    if pairName == "DASHUSDT": return normalizedPairNames[1]
+    if pairName == "LTCUSDT": return normalizedPairNames[8]
+    if pairName == "ETHBTC": return normalizedPairNames[3]
+    if pairName == "DASHBTC": return normalizedPairNames[2]
+    if pairName == "LTCBTC": return normalizedPairNames[6]
+
+    if pairName == "BTCUSD": return normalizedPairNames[9]
+    if pairName == "ETHUSD": return normalizedPairNames[4]
+    if pairName == "LTCUSD": return normalizedPairNames[7]
+
+    if pairName == "BTC-USDT": return normalizedPairNames[10]
+    if pairName == "ETH-USDT": return normalizedPairNames[5]
+    if pairName == "DASH-USDT": return normalizedPairNames[1]
+    if pairName == "LTC-USDT": return normalizedPairNames[8]
+    if pairName == "ETH-BTC": return normalizedPairNames[3]
+    if pairName == "DASH-BTC": return normalizedPairNames[2]
+    if pairName == "LTC-BTC": return normalizedPairNames[6]
+
+    # if no match, return the same pair name
+    return pairName
+        
+
+
 
 
 def krakenTicker(request):
@@ -68,13 +152,13 @@ def krakenTicker(request):
     responseList = []
     responseList.append(requests.get(kraken.api_endpoint + '/0/public/Ticker?pair=xbtusd,ethusd,dashusd,ltcusd,ethxbt,dashxbt,ltcxbt'))
 
-    apidata = processAPIResponse(responseList)
+    apidata = processRestAPIResponse(responseList)
 
     resList = []
     for key in apidata[0]["result"].items():
         resDict = getResponseDictionary()
 
-        resDict["pair"] = key[0]
+        resDict["pair"] = normalizePairName(key[0])
         resDict["ask"]["price"] = apidata[0]["result"][key[0]]["a"][0]
         resDict["ask"]["volume"] = apidata[0]["result"][key[0]]["a"][1]
 
@@ -100,7 +184,8 @@ def krakenTicker(request):
 
 
         resList.append(resDict)
-
+    # order result by pair name
+    resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
 
 
@@ -110,13 +195,13 @@ def bitfinexTicker(request):
     responseList = []
     responseList.append(requests.get(bitfinex.api_endpoint + '/v2/tickers?symbols=tBTCUSD,tETHUSD,tDSHUSD,tLTCUSD,tETHBTC,tDSHBTC,tLTCBTC'))
     
-    apidata = processAPIResponse(responseList)
+    apidata = processRestAPIResponse(responseList)
 
     resList = []
     for dataList in apidata[0]:
         resDict = getResponseDictionary()
 
-        resDict["pair"] = dataList[0]
+        resDict["pair"] = normalizePairName(dataList[0])
         resDict["ask"]["price"] = dataList[3]
         resDict["ask"]["volume"] = dataList[4]
 
@@ -132,7 +217,8 @@ def bitfinexTicker(request):
 
         resList.append(resDict)
 
-
+    # order result by pair name
+    resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
 
 
@@ -154,12 +240,12 @@ def binanceTicker(request):
     for call in binanceCalls:
         responseList.append(requests.get(binance.api_endpoint + call))
 
-    apidata = processAPIResponse(responseList)
+    apidata = processRestAPIResponse(responseList)
     resList = []
     for pairData in apidata:
         resDict = getResponseDictionary()
 
-        resDict["pair"] = pairData["symbol"]
+        resDict["pair"] = normalizePairName(pairData["symbol"])
         resDict["ask"]["price"] = pairData["askPrice"]
         resDict["bid"]["price"] = pairData["bidPrice"]
 
@@ -172,7 +258,8 @@ def binanceTicker(request):
         resDict["opening"] = pairData["openPrice"]
 
         resList.append(resDict)
-    
+    # order result by pair name
+    resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
 
 
@@ -194,13 +281,13 @@ def hitbtcTicker(request):
     for call in hitbtcCalls:
         responseList.append(requests.get(hitbtc.api_endpoint + call))
 
-    apidata = processAPIResponse(responseList)
+    apidata = processRestAPIResponse(responseList)
 
     resList = []
     for pairData in apidata:
         resDict = getResponseDictionary()
 
-        resDict["pair"] = pairData["symbol"]
+        resDict["pair"] = normalizePairName(pairData["symbol"])
         resDict["ask"]["price"] = pairData["ask"]
         resDict["bid"]["price"] = pairData["bid"]
 
@@ -213,7 +300,8 @@ def hitbtcTicker(request):
 
         resList.append(resDict)
 
-
+    # order result by pair name
+    resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
 
 
@@ -236,13 +324,13 @@ def okexTicker(request):
     for call in okexCalls:
         responseList.append(requests.get(okex.api_endpoint + call))
 
-    apidata = processAPIResponse(responseList)
+    apidata = processRestAPIResponse(responseList)
 
     resList = []
     for pairData in apidata:
         resDict = getResponseDictionary()
 
-        resDict["pair"] = pairData["instrument_id"]
+        resDict["pair"] = normalizePairName(pairData["instrument_id"])
         resDict["ask"]["price"] = pairData["ask"]
         resDict["bid"]["price"] = pairData["bid"]
 
@@ -255,5 +343,47 @@ def okexTicker(request):
 
         resList.append(resDict)
 
-
+    # order result by pair name
+    resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
+
+
+
+
+
+
+"""def blockchainTicker(request):
+    blockchain = get_object_or_404(Exchange, name="blockchain")
+    
+    options = {}
+    options['origin'] = 'https://exchange.blockchain.com'
+    url = blockchain.api_endpoint
+
+    blockchainCalls = []
+    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "LTC-USD", "granularity": 60}')
+    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "BTC-USD"}')
+    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "ETH-USD"}')
+    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "ETH-BTC"}')
+    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "LTC-BTC"}')
+
+    ws = create_connection(url, **options)
+    
+    responseList = []
+    for call in blockchainCalls:
+        method = "send"
+        msg = call
+        send =  processWebsocketAPIResponse(ws, method, msg)
+        
+        if send["event"] == "subscribed":
+            method = "receive"
+            receive =  processWebsocketAPIResponse(ws, method)
+
+            if receive["event"] == "updated":
+                responseList.append(receive)
+    
+    
+
+    ws.close()
+    return JsonResponse(responseList, safe=False)"""
+
+    

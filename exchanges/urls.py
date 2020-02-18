@@ -7,4 +7,5 @@ urlpatterns = [
     path('binance/ticker/', views.binanceTicker, name='binanceticker'),
     path('hitbtc/ticker/', views.hitbtcTicker, name='hitbtcticker'),
     path('okex/ticker/', views.okexTicker, name='okexticker'),
+    #path('blockchain/ticker/', views.blockchainTicker, name='blockchainticker'),
 ]
