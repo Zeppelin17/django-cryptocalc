@@ -91,16 +91,16 @@ def normalizePairName(pairName):
 
     normalizedPairNames = [
         "DSH-USD",   #0
-        "DSH-USDT",  #1
+        "DSH-USDT",  #1 NOT USED
         "DSH-BTC",   #2
         "ETH-BTC",   #3
         "ETH-USD",   #4
-        "ETH-USDT",  #5
+        "ETH-USDT",  #5 NOT USED
         "LTC-BTC",   #6
         "LTC-USD",   #7
-        "LTC-USDT",  #8
+        "LTC-USDT",  #8 NOT USED
         "BTC-USD",   #9
-        "BTC-USDT",  #10
+        "BTC-USDT",  #10 NOT USED
     ] 
 
     if pairName == "DASHUSD": return normalizedPairNames[0]
@@ -119,10 +119,10 @@ def normalizePairName(pairName):
     if pairName == "tDSHBTC": return normalizedPairNames[2]
     if pairName == "tLTCBTC": return normalizedPairNames[6]
 
-    if pairName == "BTCUSDT": return normalizedPairNames[10]
-    if pairName == "ETHUSDT": return normalizedPairNames[5]
-    if pairName == "DASHUSDT": return normalizedPairNames[1]
-    if pairName == "LTCUSDT": return normalizedPairNames[8]
+    if pairName == "BTCUSDT": return normalizedPairNames[9]
+    if pairName == "ETHUSDT": return normalizedPairNames[4]
+    if pairName == "DASHUSDT": return normalizedPairNames[0]
+    if pairName == "LTCUSDT": return normalizedPairNames[7]
     if pairName == "ETHBTC": return normalizedPairNames[3]
     if pairName == "DASHBTC": return normalizedPairNames[2]
     if pairName == "LTCBTC": return normalizedPairNames[6]
@@ -131,10 +131,10 @@ def normalizePairName(pairName):
     if pairName == "ETHUSD": return normalizedPairNames[4]
     if pairName == "LTCUSD": return normalizedPairNames[7]
 
-    if pairName == "BTC-USDT": return normalizedPairNames[10]
-    if pairName == "ETH-USDT": return normalizedPairNames[5]
-    if pairName == "DASH-USDT": return normalizedPairNames[1]
-    if pairName == "LTC-USDT": return normalizedPairNames[8]
+    if pairName == "BTC-USDT": return normalizedPairNames[9]
+    if pairName == "ETH-USDT": return normalizedPairNames[4]
+    if pairName == "DASH-USDT": return normalizedPairNames[0]
+    if pairName == "LTC-USDT": return normalizedPairNames[7]
     if pairName == "ETH-BTC": return normalizedPairNames[3]
     if pairName == "DASH-BTC": return normalizedPairNames[2]
     if pairName == "LTC-BTC": return normalizedPairNames[6]
