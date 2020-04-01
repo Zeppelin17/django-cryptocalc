@@ -1,3 +1,13 @@
+"""/**
+ * Views settings for exchanges app
+ *
+ * @summary Views settings for exchanges app
+ * @author Zeppelin17 <elzeppelin17@gmail.com>
+ *
+ * Created at     : 2020-04-01 06:44:59 
+ * Last modified  : 2020-04-01 06:45:28
+ */"""
+
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponse
@@ -346,43 +356,5 @@ def okexTicker(request):
     resList = sorted(resList, key=lambda list: list["pair"])
     return JsonResponse(resList, safe=False)
 
-
-
-
-
-
-"""def blockchainTicker(request):
-    blockchain = get_object_or_404(Exchange, name="blockchain")
-    
-    options = {}
-    options['origin'] = 'https://exchange.blockchain.com'
-    url = blockchain.api_endpoint
-
-    blockchainCalls = []
-    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "LTC-USD", "granularity": 60}')
-    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "BTC-USD"}')
-    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "ETH-USD"}')
-    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "ETH-BTC"}')
-    blockchainCalls.append('{"action": "subscribe", "channel": "prices", "symbol": "LTC-BTC"}')
-
-    ws = create_connection(url, **options)
-    
-    responseList = []
-    for call in blockchainCalls:
-        method = "send"
-        msg = call
-        send =  processWebsocketAPIResponse(ws, method, msg)
-        
-        if send["event"] == "subscribed":
-            method = "receive"
-            receive =  processWebsocketAPIResponse(ws, method)
-
-            if receive["event"] == "updated":
-                responseList.append(receive)
-    
-    
-
-    ws.close()
-    return JsonResponse(responseList, safe=False)"""
 
     

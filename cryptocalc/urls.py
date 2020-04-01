@@ -1,3 +1,13 @@
+"""/**
+ * URLS file for the main app
+ *
+ * @summary URLS file for the main app
+ * @author Zeppelin17 <elzeppelin17@gmail.com>
+ *
+ * Created at     : 2020-04-01 06:36:36 
+ * Last modified  : 2020-04-01 06:37:10
+ */"""
+
 """cryptocalc URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
