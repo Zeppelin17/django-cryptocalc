@@ -15,7 +15,7 @@ Frontend repo: https://github.com/Zeppelin17/vue-cryptocalc
 ## Backend
 Clone this repo. 
 
-Create a virtual environment.
+Create a virtual environment with Python installed. This project was made with Python 3.6.
 
 Once your virtual environment is created and activated, install the needed dependencies running:
 
