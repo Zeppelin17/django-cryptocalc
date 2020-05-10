@@ -29,6 +29,8 @@ ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com', 'cryptocalc-zeppelin17.netl
 CORS_ORIGIN_WHITELIST = [
     "https://cryptocalc-zeppelin17.netlify.com",
     "http://cryptocalc-zeppelin17.netlify.com",
+    "https://cryptocalc-zeppelin17.netlify.app",
+    "http://cryptocalc-zeppelin17.netlify.app",
     "http://localhost:8080",
     "http://localhost:8000",
     "http://127.0.0.1:9000"
